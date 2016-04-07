@@ -85,11 +85,14 @@ def main():
      refresh = 3
      frame_file = new_frame_file()
 
-     frame = capture_frame()
-     annotated_frame = identify_faces(frame)
-     write_frame(annotated_frame, frame_file)
-
-     print format_page(refresh, frame_file)
+     try:
+          frame = capture_frame()
+          annotated_frame = identify_faces(frame)
+          write_frame(annotated_frame, frame_file)
+          print format_page(refresh, frame_file)
+     except:
+          print format_page(refresh, "error.png")
+          frame = capture_frame()
 
 
 if __name__ == "__main__":

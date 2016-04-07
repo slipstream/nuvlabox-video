@@ -82,7 +82,7 @@ def main():
      print script_path()
 
      clean_frames()
-     refresh = 5
+     refresh = 3
      frame_file = new_frame_file()
 
      frame = capture_frame()

@@ -155,21 +155,21 @@ class Camera(object):
         camera_fps = self.camera_fps()
         if camera_fps is not None:
             cv2.putText(frame, '{:5.2f} camera fps'.format(camera_fps),
-                        (10,self.height-50), self.font, 0.6, (250,25,250), 1)
+                        (10,self.height-50), self.font, 0.6, (250,25,250), 2)
 
         network_fps = self.network_fps()
         if network_fps is not None:
             cv2.putText(frame, '{:5.2f} effective fps'.format(network_fps),
-                        (10,self.height-30), self.font, 0.6, (250,25,250), 1)
+                        (10,self.height-30), self.font, 0.6, (250,25,250), 2)
 
         identify_fps = self.identify_fps()
         if identify_fps is not None:
             cv2.putText(frame, '{:5.2f} identifications/sec'.format(identify_fps),
-                        (10,self.height-10), self.font, 0.6, (250,25,250), 1)
+                        (10,self.height-10), self.font, 0.6, (250,25,250), 2)
 
     def draw_date(self, frame):
         cv2.putText(frame, time.strftime("%c"), (10,20), self.font, 0.6,
-                    (250,25,250), 1)
+                    (250,25,250), 2)
 
     #@profile
     def get_frame(self):
@@ -199,7 +199,7 @@ class Camera(object):
         return image
 
     # Not used. Old synchronous version
-    def request_mjpeg_image(self):
+    def get_image(self):
         frame = self.get_frame()
         self.identify_faces(frame)
         self.draw_fps(frame)
@@ -207,7 +207,7 @@ class Camera(object):
         self.draw_faces_rectangles(frame)
         return self.encode_frame_to_jpeg(frame)
 
-    def gen(self):
+    def mjpeg_generator(self):
         """Video streaming generator function."""
         while True:
             image = self.request_image()
@@ -216,7 +216,9 @@ class Camera(object):
 
 
 def main():
-    camera = Camera().gen()
+    print Camera().request_image()
 
 
+if __name__ == "__main__":
+    main()
 

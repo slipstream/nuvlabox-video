@@ -12,15 +12,26 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    """Video streaming home page."""
+    """Video streaming home page which makes use of /mjpeg."""
     return render_template('index.html')
 
+@app.route('/video')
+def video():
+    """Video streaming home page which makes use of /jpeg."""
+    return render_template('video.html')
 
-@app.route('/video_feed')
-def video_feed():
+@app.route('/mjpeg')
+def mjpeg():
     """Video streaming route. Put this in the src attribute of an img tag."""
-    return Response(Camera(**get_parameters()).gen(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(Camera(**get_parameters()).mjpeg_generator(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame',
+                    direct_passthrough=True)
+
+@app.route('/jpeg')
+def jpeg():
+    return Response(Camera(**get_parameters()).request_image(),
+                    mimetype='image/jpeg',
+                    direct_passthrough=True)
 
 def get_parameters():
     p = dict()
@@ -33,6 +44,5 @@ def get_parameters():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, threaded=True)
-
+    app.run(host='0.0.0.0', debug=False, threaded=True)
 

@@ -141,7 +141,7 @@ class Camera(object):
            scaleFactor=1.1,
            minNeighbors=20,
            minSize=(40, 40),
-           flags = cv2.cv.CV_HAAR_SCALE_IMAGE
+           flags = cv2.CASCADE_SCALE_IMAGE
         )
 
         self.identify_fps.new_frame()

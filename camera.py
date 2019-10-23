@@ -158,9 +158,9 @@ class Camera(object):
             if base_url == "/":
                 base_url = base_url[0:-1]
 
-            print self.faces, self.faces[0], self.faces[0][2], self.faces[0][3]
-            # payload = ""
-            # requests.post('%s/write?db=%s' % (base_url, db), data=payload.encode())
+            # print self.faces, self.faces[0], self.faces[0][2], self.faces[0][3]
+            payload = "face_area value=%.2f %s" % ( (self.faces[0][2] * self.faces[0][3]), int(time.time()) )
+            requests.post('%s/write?db=%s' % (base_url, db), data=payload.encode())
 
         for (x, y, w, h) in self.faces:
            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)

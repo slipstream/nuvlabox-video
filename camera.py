@@ -7,6 +7,7 @@ import time
 import utils
 import threading
 import collections
+import requests
 
 #from profilehooks import profile # pip install profilehooks
 
@@ -148,8 +149,18 @@ class Camera(object):
 
     def draw_faces_rectangles(self, frame):
         ''' Draw a rectangle around the faces '''
-        if self.faces:
-            print "HERE HERE"
+        if not isinstance(self.faces, list) and type(self.faces).__module__ == "numpy" \
+                and os.getenv("INFLUXDB_ENDPOINT") and os.getenv("INFLUXDB_DATABASE"):
+            # curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
+
+            db = os.getenv("INFLUXDB_DATABASE")
+            base_url = os.getenv("INFLUXDB_ENDPOINT")
+            if base_url == "/":
+                base_url = base_url[0:-1]
+
+            print self.faces, self.faces[0], self.faces[0][2], self.faces[0][3]
+            # payload = ""
+            # requests.post('%s/write?db=%s' % (base_url, db), data=payload.encode())
 
         for (x, y, w, h) in self.faces:
            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)

@@ -147,6 +147,14 @@ class Camera(object):
 
         self.identify_fps.new_frame()
 
+    @staticmethod
+    def send_to_influxdb(url, payload):
+        try:
+            requests.post(url, data=payload.encode())
+        except Exception as e:
+            print "Unable to write into InfluxDB: %s" % e
+            pass
+
     def draw_faces_rectangles(self, frame):
         ''' Draw a rectangle around the faces '''
         if not isinstance(self.faces, list) and type(self.faces).__module__ == "numpy" \
@@ -158,13 +166,15 @@ class Camera(object):
             if base_url == "/":
                 base_url = base_url[0:-1]
 
-            # print self.faces, self.faces[0], self.faces[0][2], self.faces[0][3]
             payload = "face_area value=%.2f %s" % ( (self.faces[0][2] * self.faces[0][3]), int(time.time()) )
-            try:
-                requests.post('%s/write?db=%s' % (base_url, db), data=payload.encode())
-            except Exception as e:
-                print "Unable to write into InfluxDB: %s" % e
-                pass
+            print payload
+
+            url = '%s/write?db=%s' % (base_url, db)
+
+            tmp_thread = threading.Thread(target=self.send_to_influxdb, name='send_to_influxdb', args=[url, payload])
+            tmp_thread.daemon = True
+            tmp_thread.start()
+
 
 
         for (x, y, w, h) in self.faces:

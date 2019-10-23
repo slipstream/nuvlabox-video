@@ -162,8 +162,6 @@ class Camera(object):
             payload = "face_area value=%.2f %s" % ( (self.faces[0][2] * self.faces[0][3]), int(time.time()) )
             try:
                 requests.post('%s/write?db=%s' % (base_url, db), data=payload.encode())
-            except MissingSchema as e:
-                print "The INFLUXDB parameters are incorrect: %s" % e
             except Exception as e:
                 print "Unable to write into InfluxDB: %s" % e
                 pass

@@ -1,0 +1,10 @@
+FROM dymat/opencv:arm32v7
+LABEL maintainer="cristovao.cordeiro@sixsq.com"
+
+RUN apt-get update && apt-get install -y python-pip -qq && \
+    apt-get install -y usbutils git -qq --no-install-recommends && \
+    pip install requests flask && apt-get clean && rm -fr /var/lib/apt/lists
+
+RUN cd /root && git clone https://github.com/slipstream/nuvlabox-video.git
+
+CMD ["/root/nuvlabox-video/app.py", "80", "640", "480", "4"]

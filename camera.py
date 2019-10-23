@@ -4,10 +4,13 @@
 import os
 import cv2
 import time
+import datetime
 import utils
 import threading
 import collections
 import requests
+
+from influxdb import InfluxDBClient
 
 #from profilehooks import profile # pip install profilehooks
 
@@ -75,6 +78,15 @@ class Camera(object):
         self.width = int(self.video.get(3))
         self.height = int(self.video.get(4))
         print '%sx%s' % (self.width, self.height)
+
+        if os.getenv("INFLUXDB_HOST") and os.getenv("INFLUXDB_PORT") and os.getenv("INFLUXDB_DATABASE"):
+            self.influxdb_client = InfluxDBClient(os.getenv("INFLUXDB_HOST"),
+                                                  os.getenv("INFLUXDB_PORT"),
+                                                  os.getenv("INFLUXDB_DATABASE"))
+
+            self.influxdb_client.create_database(os.getenv("INFLUXDB_DATABASE"))
+        else:
+            self.influxdb_client = None
 
         self.identify_faces_threads_number = threads
 
@@ -157,14 +169,25 @@ class Camera(object):
 
     def draw_faces_rectangles(self, frame):
         ''' Draw a rectangle around the faces '''
-        if not isinstance(self.faces, list) and type(self.faces).__module__ == "numpy" \
-                and os.getenv("INFLUXDB_ENDPOINT") and os.getenv("INFLUXDB_DATABASE"):
-            # curl -i -XPOST 'http://localhost:8086/write?db=mydb' --data-binary 'cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000'
+        if not isinstance(self.faces, list) and type(self.faces).__module__ == "numpy" and self.influxdb_client:
 
             db = os.getenv("INFLUXDB_DATABASE")
             base_url = os.getenv("INFLUXDB_ENDPOINT")
             if base_url == "/":
                 base_url = base_url[0:-1]
+
+            json_body = [
+                {
+                    "measurement": "faces_area_2",
+                    "time": "%sZ" %  datetime.datetime.now().replace(microsecond=0).isoformat(),
+                    "fields": {
+                        "width": self.faces[0][2],
+                        "height": self.faces[0][3],
+                        "area": (self.faces[0][2] * self.faces[0][3])
+                    }
+                }
+            ]
+            self.influxdb_client.write_points(json_body)
 
             payload = "face_area value=%.2f %s" % ( (self.faces[0][2] * self.faces[0][3]), int(round(time.time() * 1000)) )
             print payload

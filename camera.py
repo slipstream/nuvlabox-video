@@ -157,7 +157,7 @@ class Camera(object):
 
     def draw_faces_rectangles(self, frame):
         ''' Draw a rectangle around the faces '''
-        if not isinstance(self.faces, list) and type(self.faces).__module__ == "numpy" and self.influxdb_client:
+        if not isinstance(self.faces, list) and type(self.faces).__module__ == "numpy":
 
             db = os.getenv("INFLUXDB_DATABASE")
             base_url = os.getenv("INFLUXDB_ENDPOINT")

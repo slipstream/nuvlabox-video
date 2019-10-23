@@ -148,6 +148,9 @@ class Camera(object):
 
     def draw_faces_rectangles(self, frame):
         ''' Draw a rectangle around the faces '''
+        if self.faces:
+            print "HERE HERE"
+
         for (x, y, w, h) in self.faces:
            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 

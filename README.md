@@ -1,3 +1,5 @@
+# SlipStream is now deprecated -> replaced by https://github.com/nuvla
+
 # NuvlaBox Video Demonstration
 
 This code captures frames from a video camera, detects faces within
